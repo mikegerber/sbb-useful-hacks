@@ -3,9 +3,9 @@ import os
 import random
 import re
 from glob import glob
-from guizero import App, Text, Picture, PushButton
 
-basedir = '/srv/data/clemens/GT4HistOCR/corpus/dta19/1827-heine_lieder/'
+import click
+from guizero import App, Text, Picture, PushButton
 
 
 def read_file(f):
@@ -34,16 +34,25 @@ def random_file():
         text_pred.value = ''
 
 
-png_files = glob(basedir + '*.png')
+@click.command()
+@click.argument('directory')
+def line_gt_viewer(directory):
+    """Display the .png/.gt.txt line ground truth in DIRECTORY"""
+    global png_files, filename, pic, text_gt, text_pred
 
-app = App('A very basic OCR line GT viewer')
+    png_files = glob(directory + '*.png')
+    app = App('A very basic OCR line GT viewer')
 
-filename = Text(app)
-pic = Picture(app)
-text_gt = Text(app)
-text_pred = Text(app)
-button = PushButton(app, text="I'm feeling Iucky", command=random_file)
+    filename = Text(app)
+    pic = Picture(app)
+    text_gt = Text(app)
+    text_pred = Text(app)
+    button = PushButton(app, text="I'm feeling Iucky", command=random_file)
 
-random_file()
+    random_file()
 
-app.display()
+    app.display()
+
+
+if __name__ == '__main__':
+    line_gt_viewer()
