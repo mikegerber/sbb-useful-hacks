@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-from guizero import App, Text, Picture, PushButton
-from glob import glob
+import os
 import random
 import re
+from glob import glob
+from guizero import App, Text, Picture, PushButton
 
 basedir = '/srv/data/clemens/GT4HistOCR/corpus/dta19/1827-heine_lieder/'
 
@@ -18,7 +19,7 @@ def random_file():
     gt_file = re.sub(r'\..*?\.png', '.gt.txt', png_file)
     pred_file = re.sub(r'\..*?\.png', '.pred.txt', png_file)
 
-    filename.value = gt_file
+    filename.value = os.path.basename(gt_file)
     pic.image = png_file
     text_gt.value = read_file(gt_file).rstrip()
     try:
