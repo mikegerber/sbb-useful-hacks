@@ -40,7 +40,7 @@ def line_gt_viewer(directory):
     """Display the .png/.gt.txt line ground truth in DIRECTORY"""
     global png_files, filename, pic, text_gt, text_pred
 
-    png_files = glob(directory + '*.png')
+    png_files = glob(os.path.join(directory, '*.png'))
     app = App('A very basic OCR line GT viewer')
 
     filename = Text(app)
