@@ -19,20 +19,20 @@ def random_file():
     prefix = re.sub(r'(\.\w+)?\.png$', '', png_file)
     gt_file = prefix + '.gt.txt'
     pred_file = prefix + '.pred.txt'
-
-    filename.value = os.path.basename(gt_file)
-    pic.image = png_file
-    text_gt.value = read_file(gt_file).rstrip()
+    gt = read_file(gt_file).rstrip()
     try:
-        text_pred.value = read_file(pred_file).rstrip()
+        pred = read_file(pred_file).rstrip()
+    except FileNotFoundError:
+        pred = ''
 
-        if text_pred.value == text_gt.value:
-            text_pred.text_color = 'green'
-        else:
-            text_pred.text_color = 'red'
-    except Exception as e:
-        print(e)
-        text_pred.value = ''
+    gt_file_display = os.path.basename(gt_file)
+    pred_color = 'green' if gt == pred else 'red'
+
+    filename.value = gt_file_display
+    pic.image = png_file
+    text_gt.value = gt
+    text_pred.value = pred
+    text_pred.text_color = pred_color
 
 
 @click.command()
