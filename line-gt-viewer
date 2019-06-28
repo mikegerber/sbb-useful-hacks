@@ -16,8 +16,9 @@ def read_file(fn):
 def random_file():
     png_file = random.choice(png_files)
 
-    gt_file = re.sub(r'\..*?\.png', '.gt.txt', png_file)
-    pred_file = re.sub(r'\..*?\.png', '.pred.txt', png_file)
+    prefix = re.sub(r'(\.\w+)?\.png$', '', png_file)
+    gt_file = prefix + '.gt.txt'
+    pred_file = prefix + '.pred.txt'
 
     filename.value = os.path.basename(gt_file)
     pic.image = png_file
