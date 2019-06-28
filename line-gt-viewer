@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+from guizero import App, Text, Picture, PushButton
+from glob import glob
+import random
+import re
+
+basedir = '/srv/data/clemens/GT4HistOCR/corpus/dta19/1827-heine_lieder/'
+
+
+def read_file(f):
+    with open(f, 'r') as f:
+        return f.read()
+
+
+def random_file():
+    png_file = random.choice(png_files)
+
+    gt_file = re.sub(r'\..*?\.png', '.gt.txt', png_file)
+    pred_file = re.sub(r'\..*?\.png', '.pred.txt', png_file)
+
+    filename.value = gt_file
+    pic.image = png_file
+    text_gt.value = read_file(gt_file).rstrip()
+    try:
+        text_pred.value = read_file(pred_file).rstrip()
+
+        if text_pred.value == text_gt.value:
+            text_pred.text_color = 'green'
+        else:
+            text_pred.text_color = 'red'
+    except Exception as e:
+        print(e)
+        text_pred.value = ''
+
+
+png_files = glob(basedir + '*.png')
+
+app = App('A very basic OCR line GT viewer')
+
+filename = Text(app)
+pic = Picture(app)
+text_gt = Text(app)
+text_pred = Text(app)
+button = PushButton(app, text="I'm feeling Iucky", command=random_file)
+
+random_file()
+
+app.display()
