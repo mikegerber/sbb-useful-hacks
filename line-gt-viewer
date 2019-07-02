@@ -6,6 +6,7 @@ from glob import glob
 
 import click
 from guizero import App, Text, Picture, PushButton
+from PIL import Image
 
 
 def read_file(fn):
@@ -27,9 +28,15 @@ def random_file():
 
     gt_file_display = os.path.basename(gt_file)
     pred_color = 'green' if gt == pred else 'red'
+    image = Image.open(png_file)
+    app_padding = 10
+    app_width = max(app.width, image.width + app_padding)
 
+    app.width = app_width
     filename.value = gt_file_display
-    pic.image = png_file
+    pic.width = image.size[0]
+    pic.height = image.size[1]
+    pic.image = image
     text_gt.value = gt
     text_pred.value = pred
     text_pred.text_color = pred_color
@@ -39,7 +46,7 @@ def random_file():
 @click.argument('directory')
 def line_gt_viewer(directory):
     """Display the .png/.gt.txt line ground truth in DIRECTORY"""
-    global png_files, filename, pic, text_gt, text_pred
+    global png_files, app, filename, pic, text_gt, text_pred
 
     png_files = glob(os.path.join(directory, '*.png'))
     app = App('A very basic OCR line GT viewer')
