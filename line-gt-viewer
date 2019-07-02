@@ -49,8 +49,8 @@ def line_gt_viewer(directory):
     global png_files
 
     png_files = glob(os.path.join(directory, '*.png'))
-    ui.app = App('A very basic OCR line GT viewer')
 
+    ui.app = App('A very basic OCR line GT viewer')
     ui.filename = Text(ui.app)
     ui.pic = Picture(ui.app)
     ui.text_gt = Text(ui.app)
@@ -60,7 +60,6 @@ def line_gt_viewer(directory):
     random_file()
 
     ui.app.display()
-
 
 
 class AttrDict(dict):
