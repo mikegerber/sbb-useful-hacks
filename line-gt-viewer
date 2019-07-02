@@ -15,40 +15,48 @@ def read_file(fn):
 
 
 def random_file():
-    png_file = random.choice(png_files)
+    state.png_file = random.choice(state.png_files)
 
-    prefix = re.sub(r'(\.\w+)?\.png$', '', png_file)
-    gt_file = prefix + '.gt.txt'
-    pred_file = prefix + '.pred.txt'
-    gt = read_file(gt_file).rstrip()
+    prefix = re.sub(r'(\.\w+)?\.png$', '', state.png_file)
+
+    state.gt_file = prefix + '.gt.txt'
+    state.pred_file = prefix + '.pred.txt'
+    state.gt = read_file(state.gt_file).rstrip()
     try:
-        pred = read_file(pred_file).rstrip()
+        state.pred = read_file(state.pred_file).rstrip()
     except FileNotFoundError:
-        pred = ''
+        state.pred = ''
 
-    gt_file_display = os.path.basename(gt_file)
-    pred_color = 'green' if gt == pred else 'red'
-    image = Image.open(png_file)
+    update_presentation()
+
+
+def update_presentation():
+    state.gt_file_display = os.path.basename(state.gt_file)
+    state.pred_color = 'green' if state.gt == state.pred else 'red'
+    state.image = Image.open(state.png_file)
     app_padding = 10
-    app_width = max(ui.app.width, image.width + app_padding)
+    state.app_width = max(ui.app.width, state.image.width + app_padding)
 
-    ui.app.width = app_width
-    ui.filename.value = gt_file_display
-    ui.pic.width = image.size[0]
-    ui.pic.height = image.size[1]
-    ui.pic.image = image
-    ui.text_gt.value = gt
-    ui.text_pred.value = pred
-    ui.text_pred.text_color = pred_color
+    update_ui()
+
+
+def update_ui():
+    ui.app.width = state.app_width
+    ui.filename.value = state.gt_file_display
+    ui.pic.width = state.image.size[0]
+    ui.pic.height = state.image.size[1]
+    ui.pic.image = state.image
+    ui.text_gt.value = state.gt
+    ui.text_pred.value = state.pred
+    ui.text_pred.text_color = state.pred_color
 
 
 @click.command()
 @click.argument('directory')
 def line_gt_viewer(directory):
     """Display the .png/.gt.txt line ground truth in DIRECTORY"""
-    global png_files
 
-    png_files = glob(os.path.join(directory, '*.png'))
+    state.png_files = glob(os.path.join(directory, '*.png'))
 
     ui.app = App('A very basic OCR line GT viewer')
     ui.filename = Text(ui.app)
@@ -72,6 +80,7 @@ class AttrDict(dict):
         return self[item]
 
 
+state = AttrDict()
 ui = AttrDict()
 
 if __name__ == '__main__':
