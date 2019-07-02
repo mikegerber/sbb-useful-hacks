@@ -30,37 +30,50 @@ def random_file():
     pred_color = 'green' if gt == pred else 'red'
     image = Image.open(png_file)
     app_padding = 10
-    app_width = max(app.width, image.width + app_padding)
+    app_width = max(ui.app.width, image.width + app_padding)
 
-    app.width = app_width
-    filename.value = gt_file_display
-    pic.width = image.size[0]
-    pic.height = image.size[1]
-    pic.image = image
-    text_gt.value = gt
-    text_pred.value = pred
-    text_pred.text_color = pred_color
+    ui.app.width = app_width
+    ui.filename.value = gt_file_display
+    ui.pic.width = image.size[0]
+    ui.pic.height = image.size[1]
+    ui.pic.image = image
+    ui.text_gt.value = gt
+    ui.text_pred.value = pred
+    ui.text_pred.text_color = pred_color
 
 
 @click.command()
 @click.argument('directory')
 def line_gt_viewer(directory):
     """Display the .png/.gt.txt line ground truth in DIRECTORY"""
-    global png_files, app, filename, pic, text_gt, text_pred
+    global png_files
 
     png_files = glob(os.path.join(directory, '*.png'))
-    app = App('A very basic OCR line GT viewer')
+    ui.app = App('A very basic OCR line GT viewer')
 
-    filename = Text(app)
-    pic = Picture(app)
-    text_gt = Text(app)
-    text_pred = Text(app)
-    button = PushButton(app, text="I'm feeling Iucky", command=random_file)
+    ui.filename = Text(ui.app)
+    ui.pic = Picture(ui.app)
+    ui.text_gt = Text(ui.app)
+    ui.text_pred = Text(ui.app)
+    ui.button = PushButton(ui.app, text="I'm feeling Iucky", command=random_file)
 
     random_file()
 
-    app.display()
+    ui.app.display()
 
+
+
+class AttrDict(dict):
+    """
+    A dict with attributes
+
+    Instead of writing ``foo['bar']``, write ``foo.bar``.
+    """
+    def __getattr__(self, item):
+        return self[item]
+
+
+ui = AttrDict()
 
 if __name__ == '__main__':
     line_gt_viewer()
