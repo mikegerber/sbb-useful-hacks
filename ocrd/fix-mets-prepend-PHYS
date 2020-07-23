@@ -1,0 +1,6 @@
+xmlstarlet edit --inplace \
+  -N mets="http://www.loc.gov/METS/" \
+  -N xlink="http://www.w3.org/1999/xlink" \
+  --update "//mets:div[@TYPE='page' and starts-with(@ID, '0000')]/@ID" \
+    -x "concat('PHYS_', substring-after(., '0000'))" \
+  mets.xml

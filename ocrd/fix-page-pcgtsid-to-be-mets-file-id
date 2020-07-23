@@ -1,0 +1,32 @@
+"""Fix pc:PcGtsId to be the same as mets:file[@ID]"""
+import lxml.etree as ET
+
+METS_NAMESPACE = 'http://www.loc.gov/METS/'
+XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
+PC_NAMESPACE = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15'
+NSMAP = {
+        'mets': METS_NAMESPACE,
+        'xlink': XLINK_NAMESPACE,
+        'pc': PC_NAMESPACE,
+}
+
+mets_tree = ET.parse('mets.xml')
+file_grp = mets_tree.find('//mets:fileGrp[@USE="OCR-D-GT-PAGE"]', namespaces=NSMAP)
+
+for f in file_grp.findall('./mets:file', namespaces=NSMAP):
+    flocat = f.find('./mets:FLocat', namespaces=NSMAP)
+
+    f_id = f.attrib['ID']
+    f_href = flocat.attrib['{%s}href' % XLINK_NAMESPACE]  # = filename
+
+    print(f_href)
+
+    page_tree = ET.parse(f_href)
+    pcgts = page_tree.getroot()
+
+    if pcgts.get('pcGtsId') != f_id:
+        print('Fixing pcGtsId')
+        pcgts.attrib['pcGtsId'] = f_id
+        page_tree.write(f_href, pretty_print=True, encoding='utf-8', xml_declaration=True)
+    else:
+        print('OK')

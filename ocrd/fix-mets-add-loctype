@@ -1,0 +1,10 @@
+xmlstarlet edit --inplace \
+  -N mets="http://www.loc.gov/METS/" \
+  -N xlink="http://www.w3.org/1999/xlink" \
+  --insert "//mets:FLocat[starts-with(@xlink:href, 'OCR-D-IMG/') and not(@LOCTYPE)]" \
+    --type attr -n 'LOCTYPE' -v 'OTHER' mets.xml
+xmlstarlet edit --inplace \
+  -N mets="http://www.loc.gov/METS/" \
+  -N xlink="http://www.w3.org/1999/xlink" \
+  --insert "//mets:FLocat[starts-with(@xlink:href, 'OCR-D-IMG/') and not(@OTHERLOCTYPE)]" \
+    --type attr -n 'OTHERLOCTYPE' -v 'FILE' mets.xml

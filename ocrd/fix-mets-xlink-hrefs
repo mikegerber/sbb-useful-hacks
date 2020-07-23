@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Fix XML declaration to avoid other tools introducing character references
+# as substitutions for umlauts etc.
+if ! grep -Fq '<?xml version="1.0" encoding="utf-8"?>' mets.xml; then
+  ( echo '<?xml version="1.0" encoding="utf-8"?>'; cat mets.xml) > mets.xml.fix-xml-declaration
+  mv mets.xml.fix-xml-declaration mets.xml
+fi
+
+# Fix image links
+xmlstarlet sel -N mets=http://www.loc.gov/METS/ -t -m "//mets:FLocat" -v "@xlink:href" -n mets.xml | while read f; do
+  if echo "$f" | grep -q "^http://"; then
+    continue
+  fi
+
+  if [ ! -e $f ]; then
+    echo "$f does not exist"
+
+    for try_ext in .xml .tif; do
+      try_f="$f$try_ext"
+      if [ -e "$try_f" ]; then
+        echo "💡 but $try_f exists, fixing"
+
+        xmlstarlet edit -P --inplace -N mets=http://www.loc.gov/METS/ --update "//mets:FLocat[@xlink:href='$f']/@xlink:href" --value "$try_f" mets.xml
+      fi
+    done
+  fi
+done
